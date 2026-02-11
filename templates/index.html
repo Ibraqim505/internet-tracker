@@ -1,1 +1,373 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой цифровой баланс</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">📱</span>
+                <span class="logo-text">Мой цифровой баланс</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link active">Главная</a></li>
+                <li><a href="#tracker" class="nav-link">Учёт времени</a></li>
+                <li><a href="#stats" class="nav-link">Статистика</a></li>
+                <li><a href="#test" class="nav-link">Тест</a></li>
+                <li><a href="#safety" class="nav-link">Безопасность</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Главная секция -->
+    <section id="home" class="hero">
+        <div class="container">
+            <h1 class="hero-title">Контролируй своё цифровое время</h1>
+            <p class="hero-subtitle">Формируй здоровые привычки использования интернета и гаджетов</p>
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="todayTotal">0ч 00м</div>
+                    <div class="stat-label">Сегодня онлайн</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="weekAverage">0ч 00м</div>
+                    <div class="stat-label">Среднее за неделю</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="balanceScore">0%</div>
+                    <div class="stat-label">Баланс</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Учёт времени -->
+    <section id="tracker" class="section">
+        <div class="container">
+            <h2 class="section-title">Учёт экранного времени</h2>
+            <p class="section-subtitle">Фиксируй время, проведённое за различными активностями</p>
+            
+            <div class="tracker-grid">
+                <div class="activity-card">
+                    <div class="activity-icon">📱</div>
+                    <h3>Социальные сети</h3>
+                    <div class="time-input">
+                        <input type="number" id="social-hours" min="0" max="24" value="0" class="time-field">
+                        <span>ч</span>
+                        <input type="number" id="social-minutes" min="0" max="59" value="0" class="time-field">
+                        <span>м</span>
+                    </div>
+                    <div class="activity-total">Всего сегодня: <span id="social-total">0м</span></div>
+                </div>
+
+                <div class="activity-card">
+                    <div class="activity-icon">🎮</div>
+                    <h3>Игры</h3>
+                    <div class="time-input">
+                        <input type="number" id="games-hours" min="0" max="24" value="0" class="time-field">
+                        <span>ч</span>
+                        <input type="number" id="games-minutes" min="0" max="59" value="0" class="time-field">
+                        <span>м</span>
+                    </div>
+                    <div class="activity-total">Всего сегодня: <span id="games-total">0м</span></div>
+                </div>
+
+                <div class="activity-card">
+                    <div class="activity-icon">📺</div>
+                    <h3>Видео/Стриминг</h3>
+                    <div class="time-input">
+                        <input type="number" id="video-hours" min="0" max="24" value="0" class="time-field">
+                        <span>ч</span>
+                        <input type="number" id="video-minutes" min="0" max="59" value="0" class="time-field">
+                        <span>м</span>
+                    </div>
+                    <div class="activity-total">Всего сегодня: <span id="video-total">0м</span></div>
+                </div>
+
+                <div class="activity-card">
+                    <div class="activity-icon">📚</div>
+                    <h3>Обучение</h3>
+                    <div class="time-input">
+                        <input type="number" id="study-hours" min="0" max="24" value="0" class="time-field">
+                        <span>ч</span>
+                        <input type="number" id="study-minutes" min="0" max="59" value="0" class="time-field">
+                        <span>м</span>
+                    </div>
+                    <div class="activity-total">Всего сегодня: <span id="study-total">0м</span></div>
+                </div>
+            </div>
+
+            <button class="btn-primary" id="saveTime">Сохранить данные</button>
+            
+            <div class="recommendations" id="recommendations">
+                <h3>💡 Рекомендации</h3>
+                <div id="recommendationText"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Статистика -->
+    <section id="stats" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Визуальная статистика</h2>
+            <p class="section-subtitle">Анализ твоих цифровых привычек</p>
+            
+            <div class="stats-controls">
+                <button class="tab-btn active" data-period="week">Неделя</button>
+                <button class="tab-btn" data-period="month">Месяц</button>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="weekChart"></canvas>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-info-card">
+                    <h3>Самый активный день</h3>
+                    <p class="stat-value" id="mostActiveDay">-</p>
+                </div>
+                <div class="stat-info-card">
+                    <h3>Общее время за неделю</h3>
+                    <p class="stat-value" id="weekTotal">0ч 00м</p>
+                </div>
+                <div class="stat-info-card">
+                    <h3>Популярная активность</h3>
+                    <p class="stat-value" id="topActivity">-</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Тест -->
+    <section id="test" class="section">
+        <div class="container">
+            <h2 class="section-title">Тест: Оцени свои цифровые привычки</h2>
+            <p class="section-subtitle">Пройди краткий тест и узнай свой уровень зависимости от гаджетов</p>
+            
+            <div class="test-container" id="testContainer">
+                <div class="question-card" id="question1">
+                    <h3>Вопрос 1 из 5</h3>
+                    <p class="question-text">Как часто ты проверяешь телефон сразу после пробуждения?</p>
+                    <div class="answers">
+                        <label class="answer-option">
+                            <input type="radio" name="q1" value="3">
+                            <span>Всегда, это первое, что я делаю</span>
+                        </label>
+                        <label class="answer-option">
+                            <input type="radio" name="q1" value="2">
+                            <span>Часто, в течение 15 минут</span>
+                        </label>
+                        <label class="answer-option">
+                            <input type="radio" name="q1" value="1">
+                            <span>Иногда, через полчаса-час</span>
+                        </label>
+                        <label class="answer-option">
+                            <input type="radio" name="q1" value="0">
+                            <span>Редко или никогда</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question-card hidden" id="question2">
+                    <h3>Вопрос 2 из 5</h3>
+                    <p class="question-text">Чувствуешь ли ты тревогу, когда не можешь использовать телефон?</p>
+                    <div class="answers">
+                        <label class="answer-option">
+                            <input type="radio" name="q2" value="3">
+                            <span>Да, очень сильную</span>
+                        </label>
+                        <label class="answer-option">
+                            <input type="radio" name="q2" value="2">
+                            <span>Да, немного беспокоюсь</span>
+                        </label>
+                        <label class="answer-option">
+                            <input type="radio" name="q2" value="1">
+                            <span>Иногда, но это не проблема</span>
+                        </label>
+                        <label class="answer-option">
+                            <input type="radio" name="q2" value="0">
+                            <span>Нет, совсем не беспокоит</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question-card hidden" id="question3">
+                    <h3>Вопрос 3 из 5</h3>
+                    <p class="question-text">Сколько времени в день ты проводишь в социальных сетях?</p>
+                    <div class="answers">
+                        <label class="answer-option">
+                            <input type="radio" name="q3" value="3">
+                            <span>Больше 4 часов</span>
+                        </label>
+                        <label class="answer-option">
+                            <input type="radio" name="q3" value="2">
+                            <span>2-4 часа</span>
+                        </label>
+                        <label class="answer-option">
+                            <input type="radio" name="q3" value="1">
+                            <span>1-2 часа</span>
+                        </label>
+                        <label class="answer-option">
+                            <input type="radio" name="q3" value="0">
+                            <span>Меньше часа</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question-card hidden" id="question4">
+                    <h3>Вопрос 4 из 5</h3>
+                    <p class="question-text">Как часто ты используешь телефон во время еды или общения с близкими?</p>
+                    <div class="answers">
+                        <label class="answer-option">
+                            <input type="radio" name="q4" value="3">
+                            <span>Постоянно</span>
+                        </label>
+                        <label class="answer-option">
+                            <input type="radio" name="q4" value="2">
+                            <span>Часто</span>
+                        </label>
+                        <label class="answer-option">
+                            <input type="radio" name="q4" value="1">
+                            <span>Иногда</span>
+                        </label>
+                        <label class="answer-option">
+                            <input type="radio" name="q4" value="0">
+                            <span>Почти никогда</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question-card hidden" id="question5">
+                    <h3>Вопрос 5 из 5</h3>
+                    <p class="question-text">Бывает ли, что из-за гаджетов ты не высыпаешься или откладываешь важные дела?</p>
+                    <div class="answers">
+                        <label class="answer-option">
+                            <input type="radio" name="q5" value="3">
+                            <span>Да, очень часто</span>
+                        </label>
+                        <label class="answer-option">
+                            <input type="radio" name="q5" value="2">
+                            <span>Да, иногда</span>
+                        </label>
+                        <label class="answer-option">
+                            <input type="radio" name="q5" value="1">
+                            <span>Редко</span>
+                        </label>
+                        <label class="answer-option">
+                            <input type="radio" name="q5" value="0">
+                            <span>Никогда</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="test-result hidden" id="testResult">
+                    <h3>Результаты теста</h3>
+                    <div class="result-score" id="resultScore"></div>
+                    <div class="result-text" id="resultText"></div>
+                    <button class="btn-secondary" id="retakeTest">Пройти тест заново</button>
+                </div>
+            </div>
+
+            <div class="test-navigation">
+                <button class="btn-secondary" id="prevBtn" style="display:none;">Назад</button>
+                <button class="btn-primary" id="nextBtn">Далее</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Безопасность -->
+    <section id="safety" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">🔒 Безопасность в сети</h2>
+            <p class="section-subtitle">Важные правила защиты в интернете</p>
+            
+            <div class="safety-grid">
+                <div class="safety-card">
+                    <div class="safety-icon">🔑</div>
+                    <h3>Защита данных</h3>
+                    <ul>
+                        <li>Используй сложные пароли</li>
+                        <li>Не делись паролями</li>
+                        <li>Включай двухфакторную аутентификацию</li>
+                        <li>Меняй пароли регулярно</li>
+                    </ul>
+                </div>
+
+                <div class="safety-card">
+                    <div class="safety-icon">👤</div>
+                    <h3>Личная информация</h3>
+                    <ul>
+                        <li>Не публикуй адрес и телефон</li>
+                        <li>Проверяй настройки приватности</li>
+                        <li>Будь осторожен с геолокацией</li>
+                        <li>Не доверяй незнакомцам онлайн</li>
+                    </ul>
+                </div>
+
+                <div class="safety-card">
+                    <div class="safety-icon">💬</div>
+                    <h3>Общение в сети</h3>
+                    <ul>
+                        <li>Веди себя уважительно</li>
+                        <li>Игнорируй провокации</li>
+                        <li>Сообщай о буллинге</li>
+                        <li>Думай перед публикацией</li>
+                    </ul>
+                </div>
+
+                <div class="safety-card">
+                    <div class="safety-icon">⚠️</div>
+                    <h3>Цифровая гигиена</h3>
+                    <ul>
+                        <li>Делай перерывы от экрана</li>
+                        <li>Правило 20-20-20 для глаз</li>
+                        <li>Не используй гаджеты перед сном</li>
+                        <li>Занимайся спортом и хобби офлайн</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tips-section">
+                <h3>📋 Полезные советы</h3>
+                <div class="tips-list">
+                    <div class="tip-item">
+                        <span class="tip-number">1</span>
+                        <p>Установи лимиты времени для приложений в настройках телефона</p>
+                    </div>
+                    <div class="tip-item">
+                        <span class="tip-number">2</span>
+                        <p>Создай "цифровой детокс" — один день в неделю без соцсетей</p>
+                    </div>
+                    <div class="tip-item">
+                        <span class="tip-number">3</span>
+                        <p>Убери телефон из спальни — используй обычный будильник</p>
+                    </div>
+                    <div class="tip-item">
+                        <span class="tip-number">4</span>
+                        <p>Отключи ненужные уведомления, чтобы не отвлекаться</p>
+                    </div>
+                    <div class="tip-item">
+                        <span class="tip-number">5</span>
+                        <p>Проводи время с друзьями и семьёй без гаджетов</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2026 Мой цифровой баланс | Школьный проект по цифровой грамотности</p>
+            <p>Помни: баланс между онлайн и офлайн — залог здоровья!</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
 
